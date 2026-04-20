@@ -1,0 +1,14 @@
+:root {
+  font-family: "Segoe UI", sans-serif;
+  color: #1f2937;
+  background: #f8fafc;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+}
+
+h1 {
+  margin-top: 0;
+}
