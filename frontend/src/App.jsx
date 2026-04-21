@@ -8,6 +8,7 @@ import PatientsPage from "./pages/PatientsPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import AppointmentsPage from "./pages/AppointmentsPage";
 import MedicinesPage from "./pages/MedicinesPage";
+import ConsultationsPage from "./pages/ConsultationsPage";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           />
           <Route path="/medicines" element={<MedicinesPage />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
+          <Route path="/consultations" element={<ConsultationsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -7,6 +7,7 @@ const navLinks = [
   { to: "/doctors", label: "Doctors", roles: ["admin"], tag: "DR" },
   { to: "/medicines", label: "Medicines", tag: "RX" },
   { to: "/appointments", label: "Appointments", tag: "AP" },
+  { to: "/consultations", label: "Consultations", tag: "CN" },
 ];
 
 const pageTitles = {
@@ -15,6 +16,7 @@ const pageTitles = {
   "/doctors": "Doctor Management",
   "/medicines": "Medicine Master",
   "/appointments": "Appointment Operations",
+  "/consultations": "Consultation Workspace",
 };
 
 export default function AppLayout() {

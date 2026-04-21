@@ -3,6 +3,7 @@ from .patient import Patient
 from .doctor import Doctor
 from .appointment import Appointment, AppointmentStatus
 from .medicine import Medicine
+from .appointment_prescription import AppointmentPrescription
 
 __all__ = [
     "User",
@@ -12,4 +13,5 @@ __all__ = [
     "Appointment",
     "AppointmentStatus",
     "Medicine",
+    "AppointmentPrescription",
 ]

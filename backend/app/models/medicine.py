@@ -1,6 +1,7 @@
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
+from sqlalchemy.orm import relationship
 
 
 class Medicine(Base):
@@ -12,3 +13,5 @@ class Medicine(Base):
     symptoms: Mapped[str] = mapped_column(Text, nullable=False)
     dosage: Mapped[str | None] = mapped_column(String(255), nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    appointment_prescriptions = relationship("AppointmentPrescription", back_populates="medicine")

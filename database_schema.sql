@@ -60,3 +60,14 @@ CREATE TABLE medicines (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE appointment_prescriptions (
+  id SERIAL PRIMARY KEY,
+  appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+  dosage VARCHAR(255),
+  instructions TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (appointment_id, medicine_id)
+);

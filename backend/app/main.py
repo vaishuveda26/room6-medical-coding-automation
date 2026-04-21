@@ -4,7 +4,7 @@ from app.config import get_settings
 from app.db_migrations import run_startup_migrations
 from app.database import SessionLocal, engine
 from app.models.base import Base
-from app.routes import appointments, auth, dashboard, doctors, medicines, patients
+from app.routes import appointments, auth, consultations, dashboard, doctors, medicines, patients
 from app.utils.seed import seed_default_medicines
 
 settings = get_settings()
@@ -37,5 +37,6 @@ app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(doctors.router)
 app.include_router(medicines.router)
+app.include_router(consultations.router)
 app.include_router(appointments.router)
 app.include_router(dashboard.router)

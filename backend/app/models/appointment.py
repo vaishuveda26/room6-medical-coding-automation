@@ -54,3 +54,8 @@ class Appointment(Base):
 
     patient = relationship("Patient", back_populates="appointments")
     doctor = relationship("Doctor", back_populates="appointments")
+    prescriptions = relationship(
+        "AppointmentPrescription",
+        back_populates="appointment",
+        cascade="all, delete-orphan",
+    )
