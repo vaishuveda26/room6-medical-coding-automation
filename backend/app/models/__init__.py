@@ -1,3 +1,13 @@
-from app.models.coding_job import CodingJob
+from .user import User, UserRole
+from .patient import Patient
+from .doctor import Doctor
+from .appointment import Appointment, AppointmentStatus
 
-__all__ = ["CodingJob"]
+__all__ = [
+    "User",
+    "UserRole",
+    "Patient",
+    "Doctor",
+    "Appointment",
+    "AppointmentStatus",
+]
