@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg-app: #f3f7f7;
+    --bg-panel: rgba(255, 255, 255, 0.82);
+    --border-soft: rgba(15, 23, 42, 0.08);
+    --text-strong: #0f172a;
+    --text-muted: #5b6474;
+    --brand-700: #0d5f68;
+    --brand-600: #127a86;
+    --brand-500: #1b97a6;
+    --accent-500: #c47b36;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text-strong);
+    background:
+      radial-gradient(circle at top left, rgba(27, 151, 166, 0.16), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(196, 123, 54, 0.14), transparent 24%),
+      linear-gradient(180deg, #f9fbfb 0%, var(--bg-app) 100%);
+    font-family: "Manrope", "Segoe UI", sans-serif;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply rounded-xl border border-slate-200 bg-white/90 px-3 py-2.5 text-sm text-slate-800 shadow-sm outline-none transition;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-cyan-600 ring-4 ring-cyan-100;
+  }
+
+  button {
+    @apply transition;
+  }
+}
+
+@layer components {
+  .app-surface {
+    @apply rounded-3xl border border-white/70 bg-white/75 shadow-[0_24px_70px_-36px_rgba(15,23,42,0.45)] backdrop-blur-xl;
+  }
+
+  .page-title {
+    @apply text-3xl font-semibold tracking-tight text-slate-900;
+  }
+
+  .page-subtitle {
+    @apply mt-1 text-sm text-slate-500;
+  }
+
+  .toolbar-group {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .btn-primary {
+    @apply rounded-xl bg-cyan-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-800;
+  }
+
+  .btn-secondary {
+    @apply rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50;
+  }
+
+  .btn-danger {
+    @apply rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700;
+  }
+
+  .metric-card {
+    @apply app-surface p-5 text-left;
+  }
+
+  .data-shell {
+    @apply app-surface overflow-hidden;
+  }
+
+  .data-table {
+    @apply min-w-full text-left text-sm;
+  }
+
+  .data-table thead {
+    @apply bg-slate-100/80 text-slate-600;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 font-semibold;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 align-top text-slate-700;
+  }
+
+  .data-table tbody tr {
+    @apply border-t border-slate-100;
+  }
+
+  .modal-backdrop {
+    @apply fixed inset-0 z-40 flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm;
+  }
+
+  .modal-card {
+    @apply app-surface w-full p-6;
+  }
+
+  .auth-shell {
+    @apply relative min-h-screen overflow-hidden;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(27, 151, 166, 0.28), transparent 26%),
+      radial-gradient(circle at 85% 80%, rgba(196, 123, 54, 0.22), transparent 24%),
+      linear-gradient(135deg, #e9f5f5 0%, #f8fbfb 38%, #eef3f5 100%);
+  }
+
+  .auth-panel {
+    @apply app-surface w-full max-w-5xl overflow-hidden;
+  }
+}

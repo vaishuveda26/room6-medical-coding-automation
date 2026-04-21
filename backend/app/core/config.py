@@ -1,9 +1,0 @@
-from pydantic import BaseModel
-
-
-class Settings(BaseModel):
-    app_name: str = "Medical Automation API"
-    environment: str = "development"
-
-
-settings = Settings()

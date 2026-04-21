@@ -1,0 +1,73 @@
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'doctor')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE patients (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  age INTEGER NOT NULL,
+  gender VARCHAR(20) NOT NULL,
+  phone VARCHAR(30) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE doctors (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(120) NOT NULL,
+  specialization VARCHAR(120) NOT NULL,
+  gender VARCHAR(20),
+  phone VARCHAR(30),
+  address VARCHAR(255),
+  qualification VARCHAR(120),
+  license_number VARCHAR(60),
+  years_of_experience INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE appointments (
+  id SERIAL PRIMARY KEY,
+  appointment_code VARCHAR(40) UNIQUE NOT NULL,
+  patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  doctor_id INTEGER NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+  date TIMESTAMP NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled', 'no_show')),
+  consultation_mode VARCHAR(20) NOT NULL DEFAULT 'in_person',
+  priority VARCHAR(20) NOT NULL DEFAULT 'routine',
+  duration_minutes INTEGER NOT NULL DEFAULT 30,
+  reason_for_visit VARCHAR(255) NOT NULL,
+  symptoms TEXT,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE medicines (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(40) UNIQUE NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  symptoms TEXT NOT NULL,
+  dosage VARCHAR(255),
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE appointment_prescriptions (
+  id SERIAL PRIMARY KEY,
+  appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+  dosage VARCHAR(255),
+  instructions TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (appointment_id, medicine_id)
+);
