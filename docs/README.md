@@ -41,4 +41,5 @@ This folder contains complete technical documentation for the Medical Automation
 ## Notes
 
 - Tables are auto-created on backend startup.
-- Seed script is available for sample users (`backend/seed_d
+- Seed script is available for sample users (`backend/seed_data.py`).
+- API docs are available at `/docs` when backend is running.
