@@ -1,6 +1,6 @@
 from datetime import datetime, time, timedelta
 from fastapi import APIRouter, Depends
-from sqlalchemy import func
+from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from app.auth.deps import require_role
 from app.database import get_db
@@ -31,98 +31,116 @@ def get_stats(
     status_filter: AppointmentStatus | None = None,
     doctor_id: int | None = None,
 ):
-    total_patients = db.query(func.count(Patient.id)).scalar() or 0
-    total_doctors = db.query(func.count(Doctor.id)).scalar() or 0
-    total_medicines = db.query(func.count(Medicine.id)).scalar() or 0
-    total_appointments = db.query(func.count(Appointment.id)).scalar() or 0
-
-    scheduled_appointments = (
-        db.query(func.count(Appointment.id))
-        .filter(Appointment.status == AppointmentStatus.scheduled)
-        .scalar()
-        or 0
-    )
-    completed_appointments = (
-        db.query(func.count(Appointment.id))
-        .filter(Appointment.status == AppointmentStatus.completed)
-        .scalar()
-        or 0
-    )
-    cancelled_appointments = (
-        db.query(func.count(Appointment.id))
-        .filter(Appointment.status == AppointmentStatus.cancelled)
-        .scalar()
-        or 0
-    )
-    no_show_appointments = (
-        db.query(func.count(Appointment.id))
-        .filter(Appointment.status == AppointmentStatus.no_show)
-        .scalar()
-        or 0
-    )
-
     today = datetime.now().date()
     today_start = datetime.combine(today, time.min)
     tomorrow_start = today_start + timedelta(days=1)
     day_after_tomorrow_start = today_start + timedelta(days=2)
 
-    base_appointment_query = db.query(Appointment)
+    doctor_profile = None
     if current_user.role == UserRole.doctor:
         doctor_profile = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
         if not doctor_profile:
-            filtered_appointments = []
-            today_appointments = []
-            tomorrow_appointments = []
-        else:
-            base_appointment_query = base_appointment_query.filter(Appointment.doctor_id == doctor_profile.id)
-            today_appointments = (
-                base_appointment_query.filter(Appointment.date >= today_start, Appointment.date < tomorrow_start)
-                .order_by(Appointment.date.asc())
-                .limit(10)
-                .all()
+            return DashboardStats(
+                total_patients=0,
+                total_doctors=0,
+                total_medicines=db.query(func.count(Medicine.id)).scalar() or 0,
+                total_appointments=0,
+                scheduled_appointments=0,
+                completed_appointments=0,
+                cancelled_appointments=0,
+                no_show_appointments=0,
+                today_appointments_count=0,
+                tomorrow_appointments_count=0,
+                recent_patients=[],
+                recent_doctors=[],
+                recent_medicines=[],
+                today_appointments=[],
+                tomorrow_appointments=[],
+                filtered_appointments=[],
             )
-            tomorrow_appointments = (
-                base_appointment_query.filter(Appointment.date >= tomorrow_start, Appointment.date < day_after_tomorrow_start)
-                .order_by(Appointment.date.asc())
-                .limit(10)
-                .all()
-            )
-            filtered_query = base_appointment_query
-            if status_filter:
-                filtered_query = filtered_query.filter(Appointment.status == status_filter)
-            filtered_appointments = filtered_query.order_by(Appointment.date.asc()).limit(12).all()
-    else:
-        today_appointments = (
-            base_appointment_query.filter(Appointment.date >= today_start, Appointment.date < tomorrow_start)
-            .order_by(Appointment.date.asc())
-            .limit(10)
-            .all()
-        )
-        tomorrow_appointments = (
-            base_appointment_query.filter(Appointment.date >= tomorrow_start, Appointment.date < day_after_tomorrow_start)
-            .order_by(Appointment.date.asc())
-            .limit(10)
-            .all()
-        )
-        filtered_query = base_appointment_query
-        if doctor_id:
-            filtered_query = filtered_query.filter(Appointment.doctor_id == doctor_id)
-        if status_filter:
-            filtered_query = filtered_query.filter(Appointment.status == status_filter)
-        filtered_appointments = filtered_query.order_by(Appointment.date.asc()).limit(12).all()
 
-    recent_patients = [
-        DashboardRecentItem(id=patient.id, title=patient.name, subtitle=f"{patient.gender} | {patient.phone}")
-        for patient in db.query(Patient).order_by(Patient.id.desc()).limit(5).all()
-    ]
-    recent_doctors = [
-        DashboardRecentItem(id=doctor.id, title=doctor.name, subtitle=doctor.specialization)
-        for doctor in db.query(Doctor).order_by(Doctor.id.desc()).limit(5).all()
-    ]
-    recent_medicines = [
-        DashboardRecentItem(id=medicine.id, title=medicine.name, subtitle=medicine.code)
-        for medicine in db.query(Medicine).order_by(Medicine.id.desc()).limit(5).all()
-    ]
+    base_appointment_query = db.query(Appointment)
+    if current_user.role == UserRole.doctor:
+        base_appointment_query = base_appointment_query.filter(Appointment.doctor_id == doctor_profile.id)
+        total_patients = (
+            db.query(func.count(distinct(Appointment.patient_id)))
+            .filter(Appointment.doctor_id == doctor_profile.id)
+            .scalar()
+            or 0
+        )
+        total_doctors = 1
+        total_medicines = db.query(func.count(Medicine.id)).scalar() or 0
+    else:
+        total_patients = db.query(func.count(Patient.id)).scalar() or 0
+        total_doctors = db.query(func.count(Doctor.id)).scalar() or 0
+        total_medicines = db.query(func.count(Medicine.id)).scalar() or 0
+        if doctor_id:
+            base_appointment_query = base_appointment_query.filter(Appointment.doctor_id == doctor_id)
+
+    total_appointments = base_appointment_query.count()
+    scheduled_appointments = base_appointment_query.filter(Appointment.status == AppointmentStatus.scheduled).count()
+    completed_appointments = base_appointment_query.filter(Appointment.status == AppointmentStatus.completed).count()
+    cancelled_appointments = base_appointment_query.filter(Appointment.status == AppointmentStatus.cancelled).count()
+    no_show_appointments = base_appointment_query.filter(Appointment.status == AppointmentStatus.no_show).count()
+
+    today_appointments = (
+        base_appointment_query.filter(Appointment.date >= today_start, Appointment.date < tomorrow_start)
+        .order_by(Appointment.date.asc())
+        .limit(10)
+        .all()
+    )
+    tomorrow_appointments = (
+        base_appointment_query.filter(Appointment.date >= tomorrow_start, Appointment.date < day_after_tomorrow_start)
+        .order_by(Appointment.date.asc())
+        .limit(10)
+        .all()
+    )
+    filtered_query = base_appointment_query
+    if status_filter:
+        filtered_query = filtered_query.filter(Appointment.status == status_filter)
+    filtered_appointments = filtered_query.order_by(Appointment.date.asc()).limit(12).all()
+
+    if current_user.role == UserRole.doctor:
+        recent_patient_rows = (
+            db.query(Patient, Appointment.date)
+            .join(Appointment, Appointment.patient_id == Patient.id)
+            .filter(Appointment.doctor_id == doctor_profile.id)
+            .order_by(Appointment.date.desc())
+            .all()
+        )
+        seen_patient_ids = set()
+        recent_patients = []
+        for patient, _ in recent_patient_rows:
+            if patient.id in seen_patient_ids:
+                continue
+            seen_patient_ids.add(patient.id)
+            recent_patients.append(
+                DashboardRecentItem(id=patient.id, title=patient.name, subtitle=f"{patient.gender} | {patient.phone}")
+            )
+            if len(recent_patients) == 5:
+                break
+
+        recent_doctors = [
+            DashboardRecentItem(
+                id=doctor_profile.id,
+                title=doctor_profile.name,
+                subtitle=doctor_profile.specialization,
+            )
+        ]
+        recent_medicines = []
+    else:
+        recent_patients = [
+            DashboardRecentItem(id=patient.id, title=patient.name, subtitle=f"{patient.gender} | {patient.phone}")
+            for patient in db.query(Patient).order_by(Patient.id.desc()).limit(5).all()
+        ]
+        recent_doctors = [
+            DashboardRecentItem(id=doctor.id, title=doctor.name, subtitle=doctor.specialization)
+            for doctor in db.query(Doctor).order_by(Doctor.id.desc()).limit(5).all()
+        ]
+        recent_medicines = [
+            DashboardRecentItem(id=medicine.id, title=medicine.name, subtitle=medicine.code)
+            for medicine in db.query(Medicine).order_by(Medicine.id.desc()).limit(5).all()
+        ]
 
     return DashboardStats(
         total_patients=total_patients,
