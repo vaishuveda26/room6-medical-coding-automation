@@ -1,6 +1,44 @@
 from sqlalchemy.orm import Session
 from app.auth.security import hash_password
-from app.models import Doctor, User, UserRole
+from app.models import Doctor, Medicine, User, UserRole
+
+DEFAULT_MEDICINES = [
+    {
+        "code": "MED-PCM-500",
+        "name": "Paracetamol 500mg",
+        "symptoms": "fever, headache, mild body pain",
+        "dosage": "1 tablet after food up to 3 times daily",
+        "description": "Common first-line option for fever and mild pain relief.",
+    },
+    {
+        "code": "MED-AMX-500",
+        "name": "Amoxicillin 500mg",
+        "symptoms": "bacterial throat infection, ear infection, sinus infection",
+        "dosage": "As prescribed by doctor",
+        "description": "Prescription antibiotic for common bacterial infections.",
+    },
+    {
+        "code": "MED-CET-10",
+        "name": "Cetirizine 10mg",
+        "symptoms": "allergy, sneezing, runny nose, itching",
+        "dosage": "1 tablet once daily",
+        "description": "Antihistamine used for common allergy symptoms.",
+    },
+    {
+        "code": "MED-OMZ-20",
+        "name": "Omeprazole 20mg",
+        "symptoms": "acidity, heartburn, gastric irritation",
+        "dosage": "1 capsule before breakfast",
+        "description": "Used for acid reflux and stomach acid reduction.",
+    },
+    {
+        "code": "MED-ORS-01",
+        "name": "ORS Sachet",
+        "symptoms": "dehydration, diarrhea, vomiting",
+        "dosage": "Mix in clean water and sip through the day",
+        "description": "Oral rehydration support for fluid and electrolyte replacement.",
+    },
+]
 
 
 def seed_sample_users(db: Session):
@@ -34,5 +72,18 @@ def seed_sample_users(db: Session):
             specialization="Cardiology",
         )
         db.add(doctor_profile)
+
+    db.commit()
+
+
+def seed_default_medicines(db: Session):
+    existing_codes = {
+        code for (code,) in db.query(Medicine.code).filter(Medicine.code.in_([item["code"] for item in DEFAULT_MEDICINES])).all()
+    }
+
+    for medicine_data in DEFAULT_MEDICINES:
+        if medicine_data["code"] in existing_codes:
+            continue
+        db.add(Medicine(**medicine_data))
 
     db.commit()

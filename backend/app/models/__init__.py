@@ -2,6 +2,7 @@ from .user import User, UserRole
 from .patient import Patient
 from .doctor import Doctor
 from .appointment import Appointment, AppointmentStatus
+from .medicine import Medicine
 
 __all__ = [
     "User",
@@ -10,4 +11,5 @@ __all__ = [
     "Doctor",
     "Appointment",
     "AppointmentStatus",
+    "Medicine",
 ]

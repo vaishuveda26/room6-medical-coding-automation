@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import PatientsPage from "./pages/PatientsPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import AppointmentsPage from "./pages/AppointmentsPage";
+import MedicinesPage from "./pages/MedicinesPage";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/medicines" element={<MedicinesPage />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
         </Route>
 

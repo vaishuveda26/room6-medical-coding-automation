@@ -27,7 +27,12 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.flush()
 
     if payload.role == UserRole.doctor:
-        doctor = Doctor(user_id=user.id, name=payload.name, specialization=payload.specialization or "General")
+        doctor = Doctor(
+            user_id=user.id,
+            name=payload.name,
+            specialization=payload.specialization or "General",
+            gender="Prefer not to say",
+        )
         db.add(doctor)
 
     db.commit()

@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
-from app.database import engine
+from app.db_migrations import run_startup_migrations
+from app.database import SessionLocal, engine
 from app.models.base import Base
-from app.routes import appointments, auth, dashboard, doctors, patients
+from app.routes import appointments, auth, dashboard, doctors, medicines, patients
+from app.utils.seed import seed_default_medicines
 
 settings = get_settings()
 
@@ -21,6 +23,9 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
+    run_startup_migrations()
+    with SessionLocal() as session:
+        seed_default_medicines(session)
 
 
 @app.get("/")
@@ -31,5 +36,6 @@ def healthcheck():
 app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(doctors.router)
+app.include_router(medicines.router)
 app.include_router(appointments.router)
 app.include_router(dashboard.router)

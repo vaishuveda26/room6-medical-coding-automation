@@ -13,6 +13,13 @@ This folder contains complete technical documentation for the Medical Automation
 7. [Deployment Architecture](./07-deployment-architecture.md)
 8. [Local Development Guide](./08-local-development-guide.md)
 9. [Operational Notes](./09-operational-notes.md)
+10. [Software Requirements Specification](./10-software-requirements-specification.md)
+11. [Functional Flow Document](./11-functional-flow-document.md)
+12. [Technical Design Document](./12-technical-design-document.md)
+13. [Flowchart](./13-flowchart.md)
+14. [Sequence Diagram](./14-sequence-diagram.md)
+15. [Unit Test Cases](./15-unit-test-cases.md)
+16. [Consolidated Project Prompts](./16-consolidated-project-prompts.md)
 
 ## Project Snapshot
 
@@ -34,5 +41,4 @@ This folder contains complete technical documentation for the Medical Automation
 ## Notes
 
 - Tables are auto-created on backend startup.
-- Seed script is available for sample users (`backend/seed_data.py`).
-- API docs are available at `/docs` when backend is running.
+- Seed script is available for sample users (`backend/seed_d
